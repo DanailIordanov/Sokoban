@@ -19,33 +19,15 @@ public abstract class Field {
         this.fill();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (Displayable[] row : field) {
-            for (Displayable col : row) {
-                if (col != null) {
-                    sb.append(col.getDisplayChar());
-                } else {
-                    sb.append(' ');
-                }
-            }
-            sb.append(System.getProperty("line.separator"));
-        }
-
-        return sb.toString();
+    public int getRowsCount() {
+        return this.bufferField.length / (this.getColumnsCount() + System.lineSeparator().length());
     }
 
-    protected abstract void fill();
-
-    protected int getColumnsCount() {
+    public int getColumnsCount() {
         return new String(this.bufferField).indexOf(System.lineSeparator());
     }
 
-    protected int getRowsCount() {
-        return this.bufferField.length / (this.getColumnsCount() + System.lineSeparator().length());
-    }
+    protected abstract void fill();
 
     private void initialize() {
         var root = System.getProperty("user.dir");
