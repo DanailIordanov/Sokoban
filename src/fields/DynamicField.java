@@ -1,6 +1,6 @@
 package fields;
 
-import interfaces.Displayable;
+import interfaces.Movable;
 import models.Box;
 import models.Player;
 
@@ -10,18 +10,22 @@ public class DynamicField extends Field {
         super();
     }
 
-    @Override
-    public Displayable getEntity(int row, int col) {
-        return super.field[row][col];
+    public Movable getEntity(int row, int col) {
+        var entity = super.field[row][col];
+        if (entity instanceof Movable) {
+            return (Movable)entity;
+        } else {
+            return null;
+        }
     }
 
-    public void setEntity(int row, int col, Displayable value) {
+    public void setEntity(int row, int col, Movable value) {
         super.field[row][col] = value;
     }
 
     @Override
     protected void fill() {
-        super.field = new Displayable[super.getRowsCount()][super.getColumnsCount()];
+        this.field = new Movable[super.getRowsCount()][super.getColumnsCount()];
 
         var index = 0;
         for (int i = 0; i < super.getRowsCount(); i++) {
@@ -32,11 +36,11 @@ public class DynamicField extends Field {
 
                 switch (bufferField[index]) {
                     case '$':
-                        super.field[i][j] = new Box();
+                        super.field[i][j] = new Box(i, j);
                         index++;
                         break;
                     case '1':
-                        super.field[i][j] = new Player();
+                        super.field[i][j] = new Player(i, j);
                         index++;
                         break;
                     case '\r':

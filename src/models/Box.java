@@ -1,8 +1,10 @@
 package models;
 
-import interfaces.Displayable;
+public class Box extends DynamicEntity {
 
-public class Box implements Displayable {
+    public Box(int row, int col) {
+        super(row, col);
+    }
 
     @Override
     public char getDisplayChar() {

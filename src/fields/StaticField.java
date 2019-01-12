@@ -10,7 +10,6 @@ public class StaticField extends Field {
         super();
     }
 
-    @Override
     public Displayable getEntity(int row, int col) {
         return super.field[row][col];
     }

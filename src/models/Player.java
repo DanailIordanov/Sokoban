@@ -1,8 +1,10 @@
 package models;
 
-import interfaces.Displayable;
+public class Player extends DynamicEntity {
 
-public class Player implements Displayable {
+    public Player(int row, int col) {
+        super(row, col);
+    }
 
     @Override
     public char getDisplayChar() {

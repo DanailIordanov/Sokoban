@@ -37,8 +37,6 @@ public abstract class Field {
         return sb.toString();
     }
 
-    public abstract Displayable getEntity(int row, int col);
-
     protected abstract void fill();
 
     protected int getColumnsCount() {
