@@ -22,7 +22,7 @@ public class ValidationManager {
         var targetRow = targetLocation.getRow();
         var targetCol = targetLocation.getColumn();
 
-        for(int i = 0; i < entity.getCollisionTypes().length; i++) {
+        for (int i = 0; i < entity.getCollisionTypes().length; i++) {
             var targetDynamicEntity = this.dynamicField.getEntity(targetRow, targetCol);
             var targetStaticEntity = this.staticField.getEntity(targetRow, targetCol);
 
@@ -49,12 +49,20 @@ public class ValidationManager {
 
         if (targetEntity != null) {
             var targetEntityClass = targetEntity.getClass();
-            if(targetEntityClass.equals(Box.class)) {
+            if (targetEntityClass.equals(Box.class)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public void checkInput(String input) {
+        if (input.length() != 1) {
+            throw new IllegalArgumentException("Your input should be just a single letter!");
+        } else if (!input.equals("w") && !input.equals("s") && !input.equals("d") && !input.equals("a")) {
+            throw new IllegalArgumentException("The key you have pressed is not a valid command!");
+        }
     }
 
 }
