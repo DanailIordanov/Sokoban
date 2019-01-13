@@ -23,7 +23,7 @@ public class FieldManager {
         this.dynamicField.setEntity(entityRow, entityCol, null);
 
         var targetLocation = entity.getManipulatedLocation(direction);
-
+        entity.setLocation(targetLocation);
         this.dynamicField.setEntity(targetLocation.getRow(), targetLocation.getColumn(), entity);
     }
 

@@ -20,6 +20,11 @@ public abstract class DynamicEntity implements Movable {
     }
 
     @Override
+    public void setLocation(Coordinates value) {
+        this.coordinates = value;
+    }
+
+    @Override
     public Coordinates getManipulatedLocation(Direction direction) {
         var entityRow = this.getLocation().getRow();
         var entityCol = this.getLocation().getColumn();
