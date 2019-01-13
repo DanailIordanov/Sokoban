@@ -39,7 +39,7 @@ public class ValidationManager {
     }
 
     public boolean boxShouldBeMovedIn(Direction direction) {
-        var player = this.dynamicField.getEntity(Player.class);
+        var player = this.dynamicField.getEntities(Player.class).get(0);
 
         var targetEntityLocation = player.getManipulatedLocation(direction);
         var targetEntityRow = targetEntityLocation.getRow();

@@ -1,11 +1,13 @@
 package fields;
 
 import interfaces.Displayable;
+import interfaces.Movable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public abstract class Field {
     private static final String FIELD_FILE_EXTENSION = ".txt";
@@ -25,6 +27,20 @@ public abstract class Field {
 
     public int getColumnsCount() {
         return new String(this.bufferField).indexOf(System.lineSeparator());
+    }
+
+    public <TEntity extends Movable> ArrayList<TEntity> getEntities(Class<TEntity> type) {
+        var entities = new ArrayList<TEntity>();
+
+        for (Displayable[] row : this.field) {
+            for (Displayable entity : row) {
+                if (entity != null && entity.getClass().equals(type)) {
+                    entities.add((TEntity)entity);
+                }
+            }
+        }
+
+        return entities;
     }
 
     protected abstract void fill();
