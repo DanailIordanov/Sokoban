@@ -1,5 +1,6 @@
 package fields;
 
+import interfaces.Displayable;
 import interfaces.Movable;
 import models.Box;
 import models.Player;
@@ -17,6 +18,17 @@ public class DynamicField extends Field {
         } else {
             return null;
         }
+    }
+
+    public <TEntity extends Movable> TEntity getEntity(Class<TEntity> type) {
+        for (Displayable[] row : super.field) {
+            for (Displayable entity : row) {
+                if (entity != null && entity.getClass().equals(type)) {
+                    return (TEntity)entity;
+                }
+            }
+        }
+        return null;
     }
 
     public void setEntity(int row, int col, Movable value) {

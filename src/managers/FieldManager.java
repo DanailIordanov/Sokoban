@@ -22,22 +22,9 @@ public class FieldManager {
         var entityCol = entity.getLocation().getColumn();
         this.dynamicField.setEntity(entityRow, entityCol, null);
 
-        switch (direction) {
-            case Up:
-                entityRow--;
-                break;
-            case Down:
-                entityRow++;
-                break;
-            case Right:
-                entityCol++;
-                break;
-            case Left:
-                entityCol--;
-                break;
-        }
+        var targetLocation = entity.getManipulatedLocation(direction);
 
-        this.dynamicField.setEntity(entityRow, entityCol, entity);
+        this.dynamicField.setEntity(targetLocation.getRow(), targetLocation.getColumn(), entity);
     }
 
     public String show() {
@@ -45,10 +32,10 @@ public class FieldManager {
 
         for (int i = 0; i < this.staticField.getRowsCount(); i++) {
             for (int j = 0; j < this.staticField.getColumnsCount(); j++) {
-                if (staticField.getEntity(i, j) != null) {
-                    sb.append(staticField.getEntity(i, j).getDisplayChar());
-                } else if (dynamicField.getEntity(i, j) != null) {
+                if (dynamicField.getEntity(i, j) != null) {
                     sb.append(dynamicField.getEntity(i, j).getDisplayChar());
+                } else if (staticField.getEntity(i, j) != null) {
+                    sb.append(staticField.getEntity(i, j).getDisplayChar());
                 } else {
                     sb.append(' ');
                 }
