@@ -10,28 +10,24 @@ public class StaticField extends Field {
         super();
     }
 
-    public Displayable getEntity(int row, int col) {
-        return super.field[row][col];
-    }
-
     @Override
     protected void fill() {
-        super.field = new Displayable[super.getRowsCount()][super.getColumnsCount()];
+        super.initialize(Displayable.class);
 
         var index = 0;
         for (int i = 0; i < super.getRowsCount(); i++) {
             for (int j = 0; j < super.getColumnsCount(); j++) {
-                if(index >= super.bufferField.length) {
+                if(index >= super.getBuffer().getLength()) {
                     break;
                 }
 
-                switch (bufferField[index]) {
+                switch (super.getBuffer().getChar(index)) {
                     case '#':
-                        super.field[i][j] = new Wall();
+                        super.setEntity(i, j, new Wall());
                         index++;
                         break;
                     case '.':
-                        super.field[i][j] = new Target();
+                        super.setEntity(i, j, new Target());
                         index++;
                         break;
                     case '\r':
@@ -41,7 +37,7 @@ public class StaticField extends Field {
                         break;
                     default:
                         index++;
-                        super.field[i][j] = null;
+                        super.setEntity(i, j, null);
                         break;
                 }
             }

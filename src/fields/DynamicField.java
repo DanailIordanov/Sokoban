@@ -10,8 +10,9 @@ public class DynamicField extends Field {
         super();
     }
 
+    @Override
     public Movable getEntity(int row, int col) {
-        var entity = super.field[row][col];
+        var entity = super.getEntity(row, col);
         if (entity instanceof Movable) {
             return (Movable)entity;
         } else {
@@ -19,28 +20,24 @@ public class DynamicField extends Field {
         }
     }
 
-    public void setEntity(int row, int col, Movable value) {
-        super.field[row][col] = value;
-    }
-
     @Override
     protected void fill() {
-        this.field = new Movable[super.getRowsCount()][super.getColumnsCount()];
+        super.initialize(Movable.class);
 
         var index = 0;
         for (int i = 0; i < super.getRowsCount(); i++) {
             for (int j = 0; j < super.getColumnsCount(); j++) {
-                if(index >= super.bufferField.length) {
+                if(index >= super.getBuffer().getLength()) {
                     break;
                 }
 
-                switch (bufferField[index]) {
+                switch (super.getBuffer().getChar(index)) {
                     case '$':
-                        super.field[i][j] = new Box(i, j);
+                        super.setEntity(i, j, new Box(i, j));
                         index++;
                         break;
                     case '1':
-                        super.field[i][j] = new Player(i, j);
+                        super.setEntity(i, j, new Player(i, j));
                         index++;
                         break;
                     case '\r':
@@ -50,7 +47,7 @@ public class DynamicField extends Field {
                         break;
                     default:
                         index++;
-                        super.field[i][j] = null;
+                        super.setEntity(i, j, null);
                         break;
                 }
             }

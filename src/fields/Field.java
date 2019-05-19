@@ -3,30 +3,26 @@ package fields;
 import interfaces.Displayable;
 import interfaces.Movable;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public abstract class Field {
-    private static final String FIELD_FILE_EXTENSION = ".txt";
-    private static final String FIELD_FILE_PATH = "\\resources\\gameField";
 
-    protected Displayable[][] field;
-    protected char[] bufferField;
+    private Displayable[][] field;
+    private BufferField buffer;
 
     protected Field() {
-        this.initialize();
+        this.buffer = new BufferField();
+
         this.fill();
     }
 
-    public int getRowsCount() {
-        return this.bufferField.length / (this.getColumnsCount() + System.lineSeparator().length());
+    public Displayable getEntity(int row, int col) {
+        return this.field[row][col];
     }
 
-    public int getColumnsCount() {
-        return new String(this.bufferField).indexOf(System.lineSeparator());
+    public void setEntity(int row, int col, Displayable value) {
+        this.field[row][col] = value;
     }
 
     public <TEntity extends Movable> ArrayList<TEntity> getEntities(Class<TEntity> type) {
@@ -43,26 +39,22 @@ public abstract class Field {
         return entities;
     }
 
-    protected abstract void fill();
-
-    private void initialize() {
-        var root = System.getProperty("user.dir");
-        try {
-            var file = new File(root + FIELD_FILE_PATH + FIELD_FILE_EXTENSION);
-            var reader = new FileReader(file);
-
-            this.bufferField = new char[(int)file.length()];
-
-            for (int i = 0; i < file.length(); i++) {
-                var currentChar = (char)reader.read();
-                this.bufferField[i] = currentChar;
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("The file, containing the field, could not be found.");
-        } catch (IOException e) {
-            System.out.println("The file, containing the field, could not be read.");
-        }
+    public int getRowsCount() {
+        return this.buffer.getLength() / (this.getColumnsCount() + System.lineSeparator().length());
     }
+
+    public int getColumnsCount() {
+        return this.buffer.toString().indexOf(System.lineSeparator());
+    }
+
+    protected BufferField getBuffer() {
+        return this.buffer;
+    }
+
+    protected <T extends Displayable> void initialize(Class<T> type) {
+        this.field = (T[][])Array.newInstance(type, this.getRowsCount(), this.getColumnsCount());
+    }
+
+    protected abstract void fill();
 
 }
