@@ -11,7 +11,7 @@ public class StaticField extends Field {
     }
 
     @Override
-    protected void fill() {
+    protected void load() {
         super.initialize(Displayable.class);
 
         var index = 0;
