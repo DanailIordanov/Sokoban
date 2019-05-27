@@ -34,10 +34,8 @@ public class FieldManager {
             for (int j = 0; j < this.staticField.getColumnsCount(); j++) {
                 if (dynamicField.getEntity(i, j) != null) {
                     sb.append(dynamicField.getEntity(i, j).getDisplayChar());
-                } else if (staticField.getEntity(i, j) != null) {
-                    sb.append(staticField.getEntity(i, j).getDisplayChar());
                 } else {
-                    sb.append(' ');
+                    sb.append(staticField.getEntity(i, j).getDisplayChar());
                 }
             }
             sb.append(System.getProperty("line.separator"));

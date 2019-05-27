@@ -1,6 +1,7 @@
 package fields;
 
 import interfaces.Displayable;
+import models.Blank;
 import models.Target;
 import models.Wall;
 
@@ -36,8 +37,8 @@ public class StaticField extends Field {
                         j--;
                         break;
                     default:
+                        super.setEntity(i, j, new Blank());
                         index++;
-                        super.setEntity(i, j, null);
                         break;
                 }
             }
