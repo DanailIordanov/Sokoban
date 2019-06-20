@@ -57,7 +57,7 @@ public class ValidationManager {
         return false;
     }
 
-    public void checkInput(String input) {
+    public static void checkInput(String input) {
         if (input.length() != 1) {
             throw new IllegalArgumentException("Your input should be just a single letter!");
         } else if (!input.equals("w") && !input.equals("s") && !input.equals("d") && !input.equals("a")) {

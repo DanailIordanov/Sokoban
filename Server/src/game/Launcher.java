@@ -1,7 +1,9 @@
 package game;
 
+import IO.ConsoleReader;
 import fields.DynamicField;
 import fields.StaticField;
+import managers.CommandManager;
 import managers.FieldManager;
 import managers.GameManager;
 import managers.ValidationManager;
@@ -18,8 +20,10 @@ public class Launcher {
         var game = new GameManager(staticField, dynamicField);
 
         var scanner = new Scanner(System.in);
+        var reader = new ConsoleReader(scanner);
+        var commandManager = new CommandManager(reader);
 
-        var engine = new Engine(dynamicField, field, validation, game, scanner);
+        var engine = new Engine(dynamicField, field, validation, game, commandManager);
         engine.run();
 
         scanner.close();

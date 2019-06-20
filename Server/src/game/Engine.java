@@ -1,6 +1,5 @@
 package game;
 
-import common.Direction;
 import fields.DynamicField;
 import managers.FieldManager;
 import managers.GameManager;

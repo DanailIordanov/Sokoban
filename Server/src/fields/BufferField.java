@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class BufferField {
     private static final String FIELD_FILE_EXTENSION = ".txt";
-    private static final String FIELD_FILE_PATH = "\\resources\\gameField";
+    private static final String FIELD_FILE_PATH = "\\res\\gameField";
 
     private char[] field;
 

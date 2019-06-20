@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Sokoban.iml" filepath="$PROJECT_DIR$/Sokoban.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Client/Sokoban.Client.iml" filepath="$PROJECT_DIR$/Client/Sokoban.Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Server/Sokoban.Server.iml" filepath="$PROJECT_DIR$/Server/Sokoban.Server.iml" />
     </modules>
   </component>
 </project>
