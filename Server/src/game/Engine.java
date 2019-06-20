@@ -1,12 +1,11 @@
 package game;
 
 import fields.DynamicField;
+import managers.CommandManager;
 import managers.FieldManager;
 import managers.GameManager;
 import managers.ValidationManager;
 import models.Player;
-
-import java.util.Scanner;
 
 public class Engine {
 
@@ -14,16 +13,16 @@ public class Engine {
     private FieldManager field;
     private ValidationManager validation;
     private GameManager game;
-    private Scanner scanner;
+    private CommandManager commandManager;
 
     public Engine(DynamicField dynamicField,
                   FieldManager field, ValidationManager validation,
-                  GameManager game, Scanner scanner) {
+                  GameManager game, CommandManager commandManager) {
         this.dynamicField = dynamicField;
         this.field = field;
         this.validation = validation;
         this.game = game;
-        this.scanner = scanner;
+        this.commandManager = commandManager;
     }
 
     public void run() {
@@ -38,7 +37,7 @@ public class Engine {
                 break;
             }
 
-            var direction = this.parseDirection();
+            var direction = this.commandManager.parse();
 
             if (!validation.willCollideIn(direction, player)) {
                 var targetLocation = player.getManipulatedLocation(direction);
@@ -57,30 +56,6 @@ public class Engine {
         }
 
         System.out.println("Congratulations! You have won the game!");
-    }
-
-    private Direction parseDirection() {
-        String command = "";
-
-        var commandIsValid = false;
-        while (!commandIsValid) {
-            try {
-                command = this.scanner.next();
-                this.validation.checkInput(command);
-                commandIsValid = true;
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        switch (command) {
-            case "w": return Direction.Up;
-            case "s": return Direction.Down;
-            case "d": return Direction.Right;
-            case "a": return Direction.Left;
-        }
-
-        return null;
     }
 
 }
