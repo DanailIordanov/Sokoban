@@ -1,16 +1,16 @@
-package managers;
+package handlers;
 
 import fields.DynamicField;
 import fields.StaticField;
 import models.Box;
 import models.Target;
 
-public class GameManager {
+public class StatusHandler {
 
     private StaticField staticField;
     private DynamicField dynamicField;
 
-    public GameManager(StaticField staticField, DynamicField dynamicField) {
+    public StatusHandler(StaticField staticField, DynamicField dynamicField) {
         this.staticField = staticField;
         this.dynamicField = dynamicField;
     }

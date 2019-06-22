@@ -1,4 +1,4 @@
-package managers;
+package handlers;
 
 import common.Direction;
 import fields.DynamicField;
@@ -7,12 +7,12 @@ import interfaces.Movable;
 import models.Box;
 import models.Player;
 
-public class ValidationManager {
+public class ValidationHandler {
 
     private StaticField staticField;
     private DynamicField dynamicField;
 
-    public ValidationManager(StaticField staticField, DynamicField dynamicField) {
+    public ValidationHandler(StaticField staticField, DynamicField dynamicField) {
         this.staticField = staticField;
         this.dynamicField = dynamicField;
     }
