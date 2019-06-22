@@ -22,7 +22,11 @@ public class GameHandler {
     }
 
     public String play(String command, boolean fromServer) {
-        Player player = this.dynamicField.getEntities(Player.class).get(0);
+        Player player = dynamicField
+                .getEntities(Player.class).stream()
+                .filter(p -> p.isServerPlayer() == fromServer)
+                .findFirst()
+                .orElse(null);
 
         ConsoleCleaner.clear();
 

@@ -51,6 +51,7 @@ public class DynamicField extends Field {
     protected void load() {
         super.initialize(Movable.class);
 
+        var playerIsMarked = false;
         var index = 0;
         for (int i = 0; i < super.getRowsCount(); i++) {
             for (int j = 0; j < super.getColumnsCount(); j++) {
@@ -64,7 +65,12 @@ public class DynamicField extends Field {
                         index++;
                         break;
                     case '1':
-                        super.setEntity(i, j, new Player(i, j));
+                        if(!playerIsMarked) {
+                            super.setEntity(i, j, new Player(i, j, true));
+                            playerIsMarked = true;
+                        } else {
+                            super.setEntity(i, j, new Player(i, j, false));
+                        }
                         index++;
                         break;
                     case '\r':

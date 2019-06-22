@@ -38,8 +38,13 @@ public class ValidationHandler {
         return false;
     }
 
-    public boolean boxShouldBeMovedIn(Direction direction) {
-        var player = this.dynamicField.getEntities(Player.class).get(0);
+    public boolean boxShouldBeMovedIn(Direction direction,  boolean fromServer) {
+        var player = this.dynamicField
+                .getEntities(Player.class)
+                .stream()
+                .filter(p -> p.isServerPlayer() == fromServer)
+                .findFirst()
+                .orElse(null);
 
         var targetEntityLocation = player.getManipulatedLocation(direction);
         var targetEntityRow = targetEntityLocation.getRow();

@@ -4,13 +4,17 @@ import java.lang.reflect.Type;
 
 public class Player extends DynamicEntity {
 
-    public Player(int row, int col) {
+    private boolean serverPlayer;
+
+    public Player(int row, int col, boolean serverPlayer) {
         super(row, col);
+
+        this.serverPlayer = serverPlayer;
     }
 
     @Override
     public Type[] getCollisionTypes() {
-        return new Type[]{ Wall.class };
+        return new Type[]{ Wall.class, Player.class };
     }
 
     @Override
@@ -18,4 +22,7 @@ public class Player extends DynamicEntity {
         return '1';
     }
 
+    public boolean isServerPlayer() {
+        return serverPlayer;
+    }
 }

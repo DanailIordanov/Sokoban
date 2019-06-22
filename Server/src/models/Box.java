@@ -10,7 +10,7 @@ public class Box extends DynamicEntity {
 
     @Override
     public Type[] getCollisionTypes() {
-        return new Type[]{ Box.class, Wall.class };
+        return new Type[]{ Box.class, Wall.class, Player.class };
     }
 
     @Override
