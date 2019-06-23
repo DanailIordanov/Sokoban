@@ -1,62 +1,88 @@
 package core;
 
+import IO.ConsoleReader;
+import IO.StreamReader;
+import IO.StreamWriter;
+import IO.contracts.Reader;
+import IO.contracts.Writer;
+import data.Packet;
+import handlers.DisplayHandler;
+import handlers.GameHandler;
+import handlers.StatusHandler;
+import infrastrucutre.ConsoleCleaner;
+import infrastrucutre.Constants;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
-import java.util.Scanner;
 
 public class Server {
 
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
-    private Scanner scanner;
+    private ServerSocket server;
 
-    public Server(Scanner scanner) {
-        this.scanner = scanner;
+    private Reader inputStream;
+    private Writer outputStream;
+
+    private ConsoleReader reader;
+
+    private GameHandler gameHandler;
+    private StatusHandler status;
+    private DisplayHandler display;
+
+    public Server(ConsoleReader reader, GameHandler gameHandler, StatusHandler status, DisplayHandler display) {
+        this.reader = reader;
+        this.gameHandler = gameHandler;
+        this.status = status;
+        this.display = display;
     }
 
     public void initialize() {
-        ServerSocket server;
-
         try {
-            server = new ServerSocket(8080);
+            System.out.println(Constants.SERVER_WELCOME_MESSAGE);
+            var port = reader.getNextInt();
+            this.server = new ServerSocket(port);
 
-            System.out.println("Server is waiting for clients ...");
+            System.out.println(Constants.WAITING_MESSAGE);
 
-            var client = server.accept();
-            System.out.println("Connection with player established!");
+            var client = this.server.accept();
+            System.out.println(Constants.CONNECTED_TO_SERVER);
 
-            this.outputStream = new ObjectOutputStream(client.getOutputStream());
-            this.outputStream.flush();
-            this.inputStream = new ObjectInputStream(client.getInputStream());
+            this.outputStream = new StreamWriter(new ObjectOutputStream(client.getOutputStream()));
+            this.inputStream = new StreamReader(new ObjectInputStream(client.getInputStream()));
 
             new Thread(() -> {
+                Packet packet;
+                while (true) {
+                    packet = this.inputStream.read();
 
-                try {
-                    String line;
-                    while(true) {
-                        line = (String) inputStream.readObject();
-
-                        if(line != null && line != "quit") {
-                            System.out.println(line);
-                        }
+                    if (packet == null || packet.getOutput().equals(Constants.QUIT_COMMAND)) {
+                        break;
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    var result = this.gameHandler.play(packet.getOutput(), false);
 
-                } finally {
-                    try {
-                        inputStream.close();
-                        outputStream.close();
-
-                    } catch (IOException e) {
-                        System.out.println("There has been a problem closing the connections on the server");
+                    if(this.status.isWon()) {
+                        result += System.lineSeparator() + Constants.WON_STATUS;
                     }
+
+                    this.outputStream.write(new Packet(result, true));
+
+                    System.out.println(result);
                 }
 
+                this.outputStream.write(new Packet(Constants.GAME_OVER, false));
+                System.out.println(Constants.GAME_OVER);
+
+                this.inputStream.closeConnection();
+                this.outputStream.closeConnection();
+                System.exit(0);
             }).start();
+
+            this.sendToClient(new Packet(this.display.show(), true));
+
+            ConsoleCleaner.clear();
+            System.out.println(this.display.show());
 
         } catch (IOException e) {
             e.printStackTrace();

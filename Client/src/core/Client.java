@@ -1,74 +1,71 @@
 package core;
 
+import IO.ConsoleReader;
+import IO.StreamReader;
+import IO.StreamWriter;
+import data.Packet;
+import infrastrucutre.ConsoleCleaner;
+import infrastrucutre.Constants;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class Client {
 
-    private Scanner scanner;
+    private ConsoleReader reader;
 
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
+    private Socket client;
+    private StreamReader inputStream;
+    private StreamWriter outputStream;
 
-    public Client(Scanner scanner) {
-        this.scanner = scanner;
+    public Client(ConsoleReader reader) {
+        this.reader = reader;
     }
 
     public void connect() {
-        Socket client;
         var validInput = false;
 
         while (!validInput) {
             try {
-                System.out.println("Please enter the port you want to connect to: ");
-                var port = scanner.nextInt();
+                System.out.println(Constants.CLIENT_WELCOME_MESSAGE);
+                var port = reader.getNextInt();
 
-                client = new Socket("localhost", port);
+                this.client = new Socket("localhost", port);
 
-                this.outputStream = new ObjectOutputStream(client.getOutputStream());
-                this.inputStream = new ObjectInputStream(client.getInputStream());
+                this.outputStream = new StreamWriter(new ObjectOutputStream(client.getOutputStream()));
+                this.inputStream = new StreamReader(new ObjectInputStream(client.getInputStream()));
 
                 validInput = true;
             } catch (UnknownHostException e) {
-                System.out.println("This host is invalid, please try again: ");
+                System.out.println(Constants.INVALID_HOST);
             } catch (IOException e) {
-                System.out.println("There has been a problem connecting you to this port!");
                 e.printStackTrace();
             }
         }
 
     }
 
-    public void waitForInput() {
-        try {
-            String line;
-            while(true) {
-                line = scanner.nextLine();
-                if(line == "quit") {
+    public void waitForServer() {
+        new Thread(() -> {
+            Packet packet;
+            while (true) {
+                packet = inputStream.read();
+
+                if (packet != null && !packet.getOutput().equals(Constants.QUIT_COMMAND)) {
+                    if(packet.isToClearConsole()) {
+                        ConsoleCleaner.clear();
+                    }
+                    System.out.println(packet.getOutput());
+                } else {
+                    System.out.println(Constants.GAME_OVER);
                     break;
                 }
-
-                outputStream.writeObject(line);
-                outputStream.flush();
             }
-
-
-        } catch (IOException e) {
-            System.out.println("There has been a problem with the client!");
-            e.printStackTrace();
-        } finally {
-            try {
-                scanner.close();
-                inputStream.close();
-                outputStream.close();
-            } catch (IOException e) {
-                System.out.println("There has been a problem closing the connections by the client");
-            }
-        }
+            System.exit(0);
+        }).start();
     }
 
     public void waitForServer() {
