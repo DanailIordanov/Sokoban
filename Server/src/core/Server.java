@@ -86,21 +86,38 @@ public class Server {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("There has been an error on the server");
         }
 
     }
 
-    public void readAndSendToClient() {
-        while(true) {
-            try {
-                var command = this.scanner.nextLine();
-                outputStream.writeObject(command);
-                outputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void run() {
+        while (true) {
+            var command = this.reader.getValidCommand();
+            if (command.equals(Constants.QUIT_COMMAND)) {
+                this.sendToClient(new Packet(Constants.GAME_OVER, false));
+                break;
+            }
+
+            var result = gameHandler.play(command, true);
+
+            this.sendToClient(new Packet(result, true));
+
+            System.out.println(result);
+
+            if (this.status.isWon()) {
+                this.sendToClient(new Packet(Constants.WON_STATUS, false));
+                System.out.println(Constants.WON_STATUS);
+
+                break;
             }
         }
+
+        this.reader.closeConnection();
+        System.exit(0);
+    }
+
+    void sendToClient(Packet data) {
+        outputStream.write(data);
     }
 
 }

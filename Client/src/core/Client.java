@@ -68,22 +68,20 @@ public class Client {
         }).start();
     }
 
-    public void waitForServer() {
-        new Thread(() -> {
-            String line;
-            while(true) {
-                try {
-                    line = (String) this.inputStream.readObject();
+    public void waitForInput() {
+        String line;
+        while (true) {
+            line = reader.getValidCommand();
 
-                    if(line != null && line != "quit") {
-                        System.out.println(line);
-                    }
-                } catch (ClassNotFoundException | IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+            outputStream.write(new Packet(line, false));
+
+            if (line.equals(Constants.QUIT_COMMAND)) break;
+        }
+
+        reader.closeConnection();
+        inputStream.closeConnection();
+        outputStream.closeConnection();
+        System.exit(0);
     }
-
 
 }
