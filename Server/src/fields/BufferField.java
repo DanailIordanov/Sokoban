@@ -1,13 +1,13 @@
 package fields;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class BufferField {
     private static final String FIELD_FILE_EXTENSION = ".txt";
-    private static final String FIELD_FILE_PATH = "\\res\\gameField";
+    private static final String FIELD_FILE_PATH = "/gameField";
 
     private char[] field;
 
@@ -29,19 +29,24 @@ public class BufferField {
     }
 
     private void initializeBuffer() {
-        var root = System.getProperty("user.dir");
         try {
-            var file = new File(root + FIELD_FILE_PATH + FIELD_FILE_EXTENSION);
-            var reader = new FileReader(file);
+            var fileStream = getClass().getResourceAsStream(FIELD_FILE_PATH + FIELD_FILE_EXTENSION);
+            var reader = new BufferedReader(new InputStreamReader(fileStream));
 
-            this.field = new char[(int)file.length()];
+            StringBuilder field = new StringBuilder();
 
-            for (int i = 0; i < file.length(); i++) {
-                var currentChar = (char)reader.read();
-                this.field[i] = currentChar;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                for(char i : line.toCharArray()) {
+                    field.append(i);
+                }
+                field.append('\r');
+                field.append('\n');
             }
 
-        } catch (FileNotFoundException e) {
+            this.field = field.toString().toCharArray();
+
+        } catch (FileNotFoundException | NullPointerException e) {
             System.out.println("The file, containing the field, could not be found.");
         } catch (IOException e) {
             System.out.println("The file, containing the field, could not be read.");
