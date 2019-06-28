@@ -10,6 +10,7 @@ import infrastrucutre.Constants;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -32,43 +33,25 @@ public class Client {
             try {
                 System.out.println(Constants.CLIENT_WELCOME_MESSAGE);
                 var port = reader.getNextInt();
-
-                this.client = new Socket("localhost", port);
+                System.out.println(Constants.CLIENT_IP_REQUEST);
+                var ip = reader.getNext();
+                this.client = new Socket(InetAddress.getByName(ip), port);
 
                 this.outputStream = new StreamWriter(new ObjectOutputStream(client.getOutputStream()));
                 this.inputStream = new StreamReader(new ObjectInputStream(client.getInputStream()));
 
                 validInput = true;
             } catch (UnknownHostException e) {
-                System.out.println(Constants.INVALID_HOST);
+                System.out.println(Constants.INVALID_PORT);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(Constants.UNABLE_TO_CONNECT);
             }
         }
 
+        this.getServerHandler().start();
     }
 
-    public void waitForServer() {
-        new Thread(() -> {
-            Packet packet;
-            while (true) {
-                packet = inputStream.read();
-
-                if (packet != null && !packet.getOutput().equals(Constants.QUIT_COMMAND)) {
-                    if(packet.isToClearConsole()) {
-                        ConsoleCleaner.clear();
-                    }
-                    System.out.println(packet.getOutput());
-                } else {
-                    System.out.println(Constants.GAME_OVER);
-                    break;
-                }
-            }
-            System.exit(0);
-        }).start();
-    }
-
-    public void waitForInput() {
+    public void run() {
         String line;
         while (true) {
             line = reader.getValidCommand();
@@ -82,6 +65,26 @@ public class Client {
         inputStream.closeConnection();
         outputStream.closeConnection();
         System.exit(0);
+    }
+
+    private Thread getServerHandler() {
+        return new Thread(() -> {
+            Packet packet;
+            while (true) {
+                packet = inputStream.read();
+
+                if (packet == null || packet.getOutput().equals(Constants.QUIT_COMMAND)) {
+                    System.out.println(Constants.GAME_OVER);
+                    break;
+                }
+
+                if(packet.isToClearConsole()) {
+                    ConsoleCleaner.clear();
+                }
+                System.out.println(packet.getOutput());
+            }
+            System.exit(0);
+        });
     }
 
 }

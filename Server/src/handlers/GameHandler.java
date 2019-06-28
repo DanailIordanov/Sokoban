@@ -1,7 +1,6 @@
 package handlers;
 
 import fields.DynamicField;
-import infrastrucutre.ConsoleCleaner;
 import models.Player;
 
 public class GameHandler {
@@ -27,8 +26,6 @@ public class GameHandler {
                 .filter(p -> p.isServerPlayer() == fromServer)
                 .findFirst()
                 .orElse(null);
-
-        ConsoleCleaner.clear();
 
         var direction = this.command.parse(command);
 
