@@ -23,20 +23,23 @@ public class Server {
     private DisplayHandler display;
     private GameHandler game;
     private StatusHandler status;
-    private DisplayHandler display;
+    private ConnectionHandler connection;
 
-    public Server(ConsoleReader reader, GameHandler game, StatusHandler status, DisplayHandler display) {
+    public Server(DisplayHandler display, UserReader reader, UserWriter writer,
+                  GameHandler game, StatusHandler status, ConnectionHandler connection) {
         this.reader = reader;
+        this.writer = writer;
+        this.display = display;
         this.game = game;
         this.status = status;
-        this.display = display;
+        this.connection = connection;
     }
 
     public void initialize() {
         System.out.println(Constants.SERVER_WELCOME_MESSAGE);
         var port = reader.getPort();
 
-        var localHost = this.detectAddress();
+        var localHost = this.connection.detectAddress();
 
         try {
             this.server = new ServerSocket(port, 1, localHost);
@@ -48,12 +51,11 @@ public class Server {
         this.writer.showMessage(Constants.WAITING_MESSAGE);
         this.writer.showMessage(Constants.REACHED_ON + localHost.toString());
 
-        this.establishConnection();
+        this.connection.establish(this.server);
 
         this.getClientHandler().start();
 
-        this.sendToClient(new Packet(this.display.show(), true));
-
+        this.connection.send(new Packet(this.display.show(), true));
         ConsoleCleaner.clear();
 
         this.writer.showField(this.display.show());
@@ -64,7 +66,7 @@ public class Server {
             var command = this.reader.getValidCommand();
 
             if (command.equals(Constants.QUIT_COMMAND)) {
-                this.sendToClient(new Packet(Constants.GAME_OVER, false));
+                this.connection.send(new Packet(Constants.GAME_OVER, false));
                 break;
             }
 
@@ -72,99 +74,62 @@ public class Server {
 
             var result = this.game.play(command, true);
 
-            this.sendToClient(new Packet(result, true));
+            this.connection.send(new Packet(result, true));
 
             this.writer.showField(result);
 
             if (this.status.isWon()) {
-                this.sendToClient(new Packet(Constants.WON_STATUS, false));
-                System.out.println(Constants.WON_STATUS);
+                this.connection.send(new Packet(Constants.WON_STATUS, false));
+                this.writer.showMessage(Constants.WON_STATUS);
 
                 break;
             }
         }
 
         this.reader.closeConnection();
-        System.exit(0);
-    }
-
-    private InetAddress detectAddress() {
-        InetAddress localHost = null;
-        try {
-            localHost = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            System.out.println(Constants.UNABLE_TO_DETECT_ADDRESS);
-            var validHost = false;
-            while (!validHost) {
-                try {
-                    localHost = InetAddress.getByName(reader.getNext());
-                    validHost = true;
-                } catch (UnknownHostException ex) {
-                    System.out.println(Constants.INVALID_ADDRESS);
-                }
+        synchronized (ConnectionHandler.class) {
+            if (!this.server.isClosed()) {
+                this.connection.close(this.server);
             }
         }
-        return localHost;
-    }
-
-    private void establishConnection() {
-        try {
-            var client = this.server.accept();
-            System.out.println(Constants.CONNECTED_TO_SERVER);
-
-            this.outputStream = new StreamWriter(new ObjectOutputStream(client.getOutputStream()));
-            this.inputStream = new StreamReader(new ObjectInputStream(client.getInputStream()));
-        } catch (IOException e) {
-            System.out.println(Constants.UNABLE_TO_CONNECT);
-        }
+        System.exit(0);
     }
 
     private Thread getClientHandler() {
         return new Thread(() -> {
             Packet clientRequest;
             while (true) {
-                packet = this.inputStream.read();
+                //TODO remove the dependency to InputStream
+                clientRequest = this.connection.getInputStream().read();
 
-                if (packet == null || packet.getOutput().equals(Constants.QUIT_COMMAND)) {
+                if (clientRequest == null || clientRequest.getOutput().equals(Constants.QUIT_COMMAND)) {
+                    this.connection.send(new Packet(Constants.GAME_OVER, false));
+                    this.writer.showMessage(Constants.GAME_OVER);
+
                     break;
                 }
 
-                var result = this.respondToClient(packet);
+                var result = this.game.play(clientRequest.getOutput(), false);
 
-                System.out.println(result);
+                this.connection.send(new Packet(result, true));
+
+                this.writer.showField(result);
+
+                if (this.status.isWon()) {
+                    this.connection.send(new Packet(Constants.WON_STATUS, false));
+                    this.writer.showMessage(Constants.WON_STATUS);
+
+                    break;
+                }
             }
 
-            this.sendToClient(new Packet(Constants.GAME_OVER, false));
-            System.out.println(Constants.GAME_OVER);
-
-            this.inputStream.closeConnection();
-            this.outputStream.closeConnection();
-            this.closeConnection();
+            synchronized (ConnectionHandler.class) {
+                if (!this.server.isClosed()) {
+                    this.connection.close(this.server);
+                }
+            }
             System.exit(0);
         });
     }
 
-    private String respondToClient(Packet packet) {
-        var result = this.game.play(packet.getOutput(), false);
-
-        if (this.status.isWon()) {
-            result += System.lineSeparator() + Constants.WON_STATUS;
-        }
-
-        this.sendToClient(new Packet(result, true));
-
-        return result;
-    }
-
-    private void sendToClient(Packet data) {
-        outputStream.write(data);
-    }
-
-    private void closeConnection() {
-        try {
-            this.server.close();
-        } catch (IOException e) {
-            System.out.println();
-        }
-    }
 }

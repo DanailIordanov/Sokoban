@@ -1,6 +1,7 @@
 package core;
 
 import IO.ConsoleReader;
+import IO.ConsoleWriter;
 import fields.DynamicField;
 import fields.StaticField;
 import handlers.*;
@@ -13,18 +14,21 @@ public class ServerLauncher {
         var staticField = new StaticField();
         var dynamicField = new DynamicField();
 
-        var reader = new ConsoleReader(new Scanner(System.in));
-        var commandHandler = new CommandHandler(reader);
-
         var position = new PositionHandler(staticField, dynamicField);
         var validation = new ValidationHandler(staticField, dynamicField);
         var display = new DisplayHandler(staticField, dynamicField);
 
+        var reader = new ConsoleReader(new Scanner(System.in));
+        var commandHandler = new CommandHandler(reader);
+        var writer = new ConsoleWriter();
+
+        var game = new GameHandler(dynamicField, position, validation, display, commandHandler);
+
         var status = new StatusHandler(staticField, dynamicField);
+        var connection = new ConnectionHandler(reader);
 
-        var gameHandler = new GameHandler(dynamicField, commandHandler, position, validation, display);
+        var server = new Server(display, reader, writer, game, status, connection);
 
-        var server = new Server(reader, gameHandler, status, display);
         server.initialize();
 
         server.run();
