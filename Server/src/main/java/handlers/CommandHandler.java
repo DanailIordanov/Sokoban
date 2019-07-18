@@ -1,13 +1,13 @@
 package handlers;
 
-import IO.ConsoleReader;
+import IO.contracts.UserReader;
 import common.Direction;
 
 public class CommandHandler {
 
-    private ConsoleReader reader;
+    private UserReader reader;
 
-    public CommandHandler(ConsoleReader reader) {
+    public CommandHandler(UserReader reader) {
         this.reader = reader;
     }
 

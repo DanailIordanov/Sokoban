@@ -1,8 +1,8 @@
 package core;
 
-import IO.ConsoleReader;
 import IO.StreamReader;
 import IO.StreamWriter;
+import IO.contracts.UserReader;
 import data.Packet;
 import infrastrucutre.ConsoleCleaner;
 import infrastrucutre.Constants;
@@ -16,13 +16,13 @@ import java.net.UnknownHostException;
 
 public class Client {
 
-    private ConsoleReader reader;
+    private UserReader reader;
 
     private Socket client;
     private StreamReader inputStream;
     private StreamWriter outputStream;
 
-    public Client(ConsoleReader reader) {
+    public Client(UserReader reader) {
         this.reader = reader;
     }
 
@@ -32,17 +32,16 @@ public class Client {
         while (!validInput) {
             try {
                 System.out.println(Constants.CLIENT_WELCOME_MESSAGE);
-                var port = reader.getNextInt();
+                var port = reader.getPort();
                 System.out.println(Constants.CLIENT_IP_REQUEST);
-                var ip = reader.getNext();
-                this.client = new Socket(InetAddress.getByName(ip), port);
+                this.client = new Socket(reader.getIP(), port);
 
                 this.outputStream = new StreamWriter(new ObjectOutputStream(client.getOutputStream()));
                 this.inputStream = new StreamReader(new ObjectInputStream(client.getInputStream()));
 
                 validInput = true;
             } catch (UnknownHostException e) {
-                System.out.println(Constants.INVALID_PORT);
+                System.out.println(Constants.INVALID_ADDRESS);
             } catch (IOException e) {
                 System.out.println(Constants.UNABLE_TO_CONNECT);
             }

@@ -1,10 +1,14 @@
 package IO;
 
+import IO.contracts.UserReader;
 import infrastrucutre.CoreValidator;
+import infrastrucutre.GameMode;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
-public class ConsoleReader {
+public class ConsoleReader implements UserReader {
 
     private Scanner scanner;
 
@@ -12,21 +16,30 @@ public class ConsoleReader {
         this.scanner = scanner;
     }
 
-    public String getNext() {
-        return this.scanner.next();
+    @Override
+    public GameMode getGameMode() {
+        return null;
     }
 
-    public int getNextInt() {
+    @Override
+    public InetAddress getIP() throws UnknownHostException {
+        var line = this.scanner.next();
+        return InetAddress.getByName(line);
+    }
+
+    @Override
+    public int getPort() {
         return this.scanner.nextInt();
     }
 
+    @Override
     public String getValidCommand() {
         String command = null;
 
         var commandIsValid = false;
         while (!commandIsValid) {
             try {
-                command = this.getNext();
+                command = this.scanner.next();
                 CoreValidator.checkInput(command);
                 commandIsValid = true;
             } catch (IllegalArgumentException e) {
@@ -37,6 +50,7 @@ public class ConsoleReader {
         return command;
     }
 
+    @Override
     public void closeConnection() {
         this.scanner.close();
     }
