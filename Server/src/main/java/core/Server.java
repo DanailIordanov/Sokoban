@@ -1,11 +1,9 @@
 package core;
 
-import IO.ConsoleReader;
-import IO.StreamReader;
-import IO.StreamWriter;
-import IO.contracts.Reader;
-import IO.contracts.Writer;
+import IO.contracts.UserReader;
+import IO.contracts.UserWriter;
 import data.Packet;
+import handlers.ConnectionHandler;
 import handlers.DisplayHandler;
 import handlers.GameHandler;
 import handlers.StatusHandler;
@@ -13,21 +11,16 @@ import infrastrucutre.ConsoleCleaner;
 import infrastrucutre.Constants;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 
 public class Server {
 
     private ServerSocket server;
 
-    private Reader inputStream;
-    private Writer outputStream;
+    private UserReader reader;
+    private UserWriter writer;
 
-    private ConsoleReader reader;
-
+    private DisplayHandler display;
     private GameHandler game;
     private StatusHandler status;
     private DisplayHandler display;
@@ -41,19 +34,19 @@ public class Server {
 
     public void initialize() {
         System.out.println(Constants.SERVER_WELCOME_MESSAGE);
-        var port = reader.getNextInt();
+        var port = reader.getPort();
 
         var localHost = this.detectAddress();
 
         try {
             this.server = new ServerSocket(port, 1, localHost);
         } catch (IOException e) {
-            System.out.println(Constants.UNABLE_TO_INITIALIZE_SERVER);
+            this.writer.showMessage(Constants.UNABLE_TO_INITIALIZE_SERVER);
             System.exit(0);
         }
 
-        System.out.println(Constants.WAITING_MESSAGE);
-        System.out.println(Constants.REACHED_ON + localHost.toString());
+        this.writer.showMessage(Constants.WAITING_MESSAGE);
+        this.writer.showMessage(Constants.REACHED_ON + localHost.toString());
 
         this.establishConnection();
 
@@ -62,13 +55,14 @@ public class Server {
         this.sendToClient(new Packet(this.display.show(), true));
 
         ConsoleCleaner.clear();
-        System.out.println(this.display.show());
 
+        this.writer.showField(this.display.show());
     }
 
     public void run() {
         while (true) {
             var command = this.reader.getValidCommand();
+
             if (command.equals(Constants.QUIT_COMMAND)) {
                 this.sendToClient(new Packet(Constants.GAME_OVER, false));
                 break;
@@ -76,11 +70,11 @@ public class Server {
 
             ConsoleCleaner.clear();
 
-            var result = game.play(command, true);
+            var result = this.game.play(command, true);
 
             this.sendToClient(new Packet(result, true));
 
-            System.out.println(result);
+            this.writer.showField(result);
 
             if (this.status.isWon()) {
                 this.sendToClient(new Packet(Constants.WON_STATUS, false));
@@ -127,7 +121,7 @@ public class Server {
 
     private Thread getClientHandler() {
         return new Thread(() -> {
-            Packet packet;
+            Packet clientRequest;
             while (true) {
                 packet = this.inputStream.read();
 

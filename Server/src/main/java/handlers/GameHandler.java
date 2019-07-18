@@ -11,8 +11,9 @@ public class GameHandler {
     private CommandHandler command;
     private DisplayHandler display;
 
-    public GameHandler(DynamicField dynamicField, CommandHandler command, PositionHandler position,
-                       ValidationHandler validation, DisplayHandler display) {
+    public GameHandler(DynamicField dynamicField, PositionHandler position,
+                       ValidationHandler validation, DisplayHandler display,
+                       CommandHandler command) {
         this.dynamicField = dynamicField;
         this.command = command;
         this.position = position;
