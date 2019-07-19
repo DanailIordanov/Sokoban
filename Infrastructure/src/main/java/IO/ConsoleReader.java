@@ -2,7 +2,6 @@ package IO;
 
 import IO.contracts.UserReader;
 import infrastrucutre.CoreValidator;
-import infrastrucutre.GameMode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -14,11 +13,6 @@ public class ConsoleReader implements UserReader {
 
     public ConsoleReader(Scanner scanner) {
         this.scanner = scanner;
-    }
-
-    @Override
-    public GameMode getGameMode() {
-        return null;
     }
 
     @Override
