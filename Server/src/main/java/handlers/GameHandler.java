@@ -1,6 +1,7 @@
 package handlers;
 
 import fields.DynamicField;
+import javafx.scene.input.KeyEvent;
 import models.Player;
 
 public class GameHandler {
@@ -21,14 +22,14 @@ public class GameHandler {
         this.display = display;
     }
 
-    public String play(String command, boolean fromServer) {
+    public String play(KeyEvent command, boolean fromServer) {
         Player player = dynamicField
                 .getEntities(Player.class).stream()
                 .filter(p -> p.isServerPlayer() == fromServer)
                 .findFirst()
                 .orElse(null);
 
-        var direction = this.command.parse(command);
+        var direction = this.command.parseKey(command);
 
         if (!validation.willCollideIn(direction, player)) {
             var targetLocation = player.getManipulatedLocation(direction);
