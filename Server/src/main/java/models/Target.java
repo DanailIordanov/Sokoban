@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 
 public class Target implements Displayable {
 
-    private static final String FIELD_FILE_PATH = "/purple_target";
+    private static final String FIELD_FILE_PATH = "/target";
     private static final String FIELD_FILE_EXTENSION = ".png";
 
     @Override

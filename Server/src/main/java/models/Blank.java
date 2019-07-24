@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 
 public class Blank implements Displayable {
 
-    private static final String FIELD_FILE_PATH = "/purple_blank2";
+    private static final String FIELD_FILE_PATH = "/blank";
     private static final String FIELD_FILE_EXTENSION = ".png";
 
     @Override

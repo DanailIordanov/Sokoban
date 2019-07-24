@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 
 public class Box extends DynamicEntity {
 
-    private static final String FIELD_FILE_PATH = "/purple_box";
+    private static final String FIELD_FILE_PATH = "/box";
     private static final String FIELD_FILE_EXTENSION = ".png";
 
     public Box(int row, int col) {

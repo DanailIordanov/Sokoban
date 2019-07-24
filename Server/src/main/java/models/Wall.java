@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 
 public class Wall implements Displayable {
 
-    private static final String FIELD_FILE_PATH = "/purple_wall";
+    private static final String FIELD_FILE_PATH = "/wall";
     private static final String FIELD_FILE_EXTENSION = ".png";
 
     @Override
