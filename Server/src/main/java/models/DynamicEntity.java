@@ -3,10 +3,15 @@ package models;
 import common.Coordinates;
 import common.Direction;
 import interfaces.Movable;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.lang.reflect.Type;
 
 public abstract class DynamicEntity implements Movable {
+
+    static final int HEIGHT = 60;
+    static final int WIDTH = 60;
 
     private Coordinates coordinates;
 
@@ -44,5 +49,17 @@ public abstract class DynamicEntity implements Movable {
 
     @Override
     public abstract char getDisplayChar();
+
+    @Override
+    public abstract ImageView getDisplayImage();
+
+    protected ImageView processImage(Image image) {
+        var view = new ImageView(image);
+        view.setFitHeight(HEIGHT);
+        view.setFitWidth(WIDTH);
+        view.setPreserveRatio(true);
+
+        return view;
+    }
 
 }
