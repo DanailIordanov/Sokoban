@@ -2,6 +2,7 @@ package fields;
 
 import interfaces.Displayable;
 import interfaces.Movable;
+import javafx.scene.layout.GridPane;
 import models.Box;
 import models.Player;
 
@@ -58,18 +59,24 @@ public class DynamicField extends Field {
                 if(index >= super.getBuffer().getLength()) {
                     break;
                 }
-
+                Displayable entity;
                 switch (super.getBuffer().getChar(index)) {
                     case '$':
-                        super.setEntity(i, j, new Box(i, j));
+                        entity = new Box(i, j);
+                        super.setEntity(i, j, entity);
+                        super.getDisplayField().add(entity.getDisplayImage(), j, i);
                         index++;
                         break;
                     case '1':
                         if(!playerIsMarked) {
-                            super.setEntity(i, j, new Player(i, j, true));
+                            entity = new Player(i, j, true);
+                            super.setEntity(i, j, entity);
+                            super.getDisplayField().add(entity.getDisplayImage(), j, i);
                             playerIsMarked = true;
                         } else {
-                            super.setEntity(i, j, new Player(i, j, false));
+                            entity = new Player(i, j, false);
+                            super.setEntity(i, j, entity);
+                            super.getDisplayField().add(entity.getDisplayImage(), j, i);
                         }
                         index++;
                         break;

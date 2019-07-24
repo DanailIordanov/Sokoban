@@ -21,14 +21,18 @@ public class StaticField extends Field {
                 if(index >= super.getBuffer().getLength()) {
                     break;
                 }
-
+                Displayable entity;
                 switch (super.getBuffer().getChar(index)) {
                     case '#':
-                        super.setEntity(i, j, new Wall());
+                        entity = new Wall();
+                        super.setEntity(i, j, entity);
+                        super.getDisplayField().add(entity.getDisplayImage(), j, i);
                         index++;
                         break;
                     case '.':
-                        super.setEntity(i, j, new Target());
+                        entity = new Target();
+                        super.setEntity(i, j, entity);
+                        super.getDisplayField().add(entity.getDisplayImage(), j, i);
                         index++;
                         break;
                     case '\r':
@@ -37,7 +41,9 @@ public class StaticField extends Field {
                         j--;
                         break;
                     default:
-                        super.setEntity(i, j, new Blank());
+                        entity = new Blank();
+                        super.setEntity(i, j, entity);
+                        super.getDisplayField().add(entity.getDisplayImage(), j, i);
                         index++;
                         break;
                 }
