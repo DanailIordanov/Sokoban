@@ -5,12 +5,28 @@ import IO.ConsoleWriter;
 import fields.DynamicField;
 import fields.StaticField;
 import handlers.*;
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.util.Scanner;
 
-public class ServerLauncher {
+public class ServerLauncher extends Application {
 
     public static void main(String[] args) {
+
+        launch(args);
+
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        var root = new StackPane();
+
         var staticField = new StaticField();
         var dynamicField = new DynamicField();
 
@@ -25,13 +41,23 @@ public class ServerLauncher {
         var game = new GameHandler(dynamicField, position, validation, display, commandHandler);
 
         var status = new StatusHandler(staticField, dynamicField);
-        var connection = new ConnectionHandler(reader);
 
-        var server = new Server(display, reader, writer, game, status, connection);
+        var server = new Server(writer, game, status);
 
-        server.initialize();
+        var staticGrid = staticField.getDisplayField();
+        staticGrid.setAlignment(Pos.CENTER);
+        var dynamicGrid = dynamicField.getDisplayField();
+        dynamicGrid.setAlignment(Pos.CENTER);
+        root.getChildren().addAll(staticGrid, dynamicGrid);
+        root.setAlignment(Pos.CENTER);
 
-        server.run();
+        Scene scene = new Scene(root, 540, 420, Color.BLACK);
+
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> server.runSingle(keyEvent));
+
+        stage.setTitle("Sokoban");
+        stage.setScene(scene);
+        stage.show();
     }
 
 }
