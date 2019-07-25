@@ -4,6 +4,7 @@ import common.Direction;
 import fields.DynamicField;
 import fields.StaticField;
 import interfaces.Movable;
+import models.Transparent;
 
 public class PositionHandler {
 
@@ -18,7 +19,7 @@ public class PositionHandler {
     public void moveIn(Direction direction, Movable entity) {
         var entityRow = entity.getLocation().getRow();
         var entityCol = entity.getLocation().getColumn();
-        this.dynamicField.setEntity(entityRow, entityCol, null);
+        this.dynamicField.setEntity(entityRow, entityCol, new Transparent(entityRow, entityCol));
 
         var targetLocation = entity.getManipulatedLocation(direction);
         entity.setLocation(targetLocation);

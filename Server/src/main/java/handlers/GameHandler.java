@@ -22,7 +22,7 @@ public class GameHandler {
         this.display = display;
     }
 
-    public String play(KeyEvent command, boolean fromServer) {
+    public void play(KeyEvent command, boolean fromServer) {
         Player player = dynamicField
                 .getEntities(Player.class).stream()
                 .filter(p -> p.isServerPlayer() == fromServer)
@@ -31,22 +31,23 @@ public class GameHandler {
 
         var direction = this.command.parseKey(command);
 
-        if (!validation.willCollideIn(direction, player)) {
-            var targetLocation = player.getManipulatedLocation(direction);
+        if(direction != null) {
+            if (!validation.willCollideIn(direction, player)) {
+                var targetLocation = player.getManipulatedLocation(direction);
 
-            if (validation.boxShouldBeMovedIn(direction, fromServer)) {
-                var box = dynamicField.getEntity(targetLocation.getRow(), targetLocation.getColumn());
-                if(!validation.willCollideIn(direction, box)) {
-                    position.moveIn(direction, box);
-                } else {
-                    return display.show();
+                if (validation.boxShouldBeMovedIn(direction, fromServer)) {
+                    var box = dynamicField.getEntity(targetLocation.getRow(), targetLocation.getColumn());
+                    if (!validation.willCollideIn(direction, box)) {
+                        position.moveIn(direction, box);
+                    } else {
+                        return;
+                    }
                 }
-            }
 
-            position.moveIn(direction, player);
+                position.moveIn(direction, player);
+            }
         }
 
-        return display.show();
     }
 
 }
