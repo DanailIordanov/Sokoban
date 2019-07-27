@@ -4,7 +4,7 @@ public class Constants {
 
     public static final String GAME_OVER = "Game over!";
 
-    public static final String WON_STATUS = "Congratulations! You have won the game!";
+    public static final String WON_STATUS = "You have won the game!";
 
     public static final String WAITING_MESSAGE = "Please wait until the second player has joined ...";
 

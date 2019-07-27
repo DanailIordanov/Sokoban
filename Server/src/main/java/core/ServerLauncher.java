@@ -2,6 +2,7 @@ package core;
 
 import IO.ConsoleReader;
 import IO.ConsoleWriter;
+import IO.PaneWriter;
 import fields.DynamicField;
 import fields.StaticField;
 import handlers.*;
@@ -36,7 +37,7 @@ public class ServerLauncher extends Application {
 
         var reader = new ConsoleReader(new Scanner(System.in));
         var commandHandler = new CommandHandler(reader);
-        var writer = new ConsoleWriter();
+        var writer = new PaneWriter();
 
         var game = new GameHandler(dynamicField, position, validation, display, commandHandler);
 
